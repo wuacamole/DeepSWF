@@ -62,6 +62,41 @@ fn get_channel() -> Cow<'static, str> {
 }
 
 fn set_windows_resource() -> Result<(), Box<dyn Error>> {
+    // Check if rc.exe is available before attempting to compile resources
+    use std::process::Command;
+    
+    // First try to find rc.exe in common Windows SDK locations
+    let sdk_paths = [
+        "C:\\Program Files (x86)\\Windows Kits\\10\\bin\\10.0.28000.0\\x64\\rc.exe",
+        "C:\\Program Files (x86)\\Windows Kits\\10\\bin\\10.0.28000.0\\x86\\rc.exe",
+        "C:\\Program Files (x86)\\Windows Kits\\10\\bin\\x64\\rc.exe",
+        "C:\\Program Files (x86)\\Windows Kits\\10\\bin\\x86\\rc.exe",
+    ];
+    
+    let mut rc_available = Command::new("rc.exe")
+        .arg("/?")
+        .output()
+        .is_ok();
+    
+    // If not in PATH, try the specific SDK paths
+    if !rc_available {
+        for path in &sdk_paths {
+            if std::path::Path::new(path).exists() {
+                // Set environment variable to help winresource crate find rc.exe
+                unsafe {
+                    std::env::set_var("WINRES_RC", path);
+                }
+                rc_available = true;
+                break;
+            }
+        }
+    }
+    
+    if !rc_available {
+        println!("cargo:warning=Windows Resource Compiler (rc.exe) not found. Skipping resource compilation.");
+        return Ok(());
+    }
+    
     let mut res = winresource::WindowsResource::new();
 
     // Set language to US English (0x0409)
