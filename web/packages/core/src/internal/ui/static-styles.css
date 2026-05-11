@@ -204,19 +204,38 @@
 #context-menu {
     color: rgb(var(--modal-foreground-rgb));
     background-color: var(--modal-background);
-    border: 1px solid gray;
-    box-shadow: 0 5px 10px -5px black;
+    box-shadow: 0 0 16px #0006;
+    border-radius: 8px;
+    overflow: hidden;
     position: absolute;
     font-size: 14px;
     text-align: start;
     list-style: none;
     white-space: nowrap;
-    padding: 3px 0;
+    padding: 5px 0;
     margin: 0;
 
     .menu-item {
-        padding: 5px 10px;
-        color: rgb(var(--modal-foreground-rgb));
+        padding: 7px 12px;
+    }
+
+    &.has-checkmarks .menu-item {
+        padding-inline-start: 32px;
+        position: relative;
+    }
+
+    &.has-checkmarks .menu-item.checked::before {
+        content: "";
+        width: 16px;
+        height: 16px;
+        position: absolute;
+        inset-inline-start: 8px;
+        top: 50%;
+        transform: translateY(-50%);
+        background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' height='16px' viewBox='0 -960 960 960' width='16px' fill='black'><path d='M382-240 154-468l57-57 171 171 367-367 57 57-424 424Z'/></svg>");
+        background-repeat: no-repeat;
+        background-size: contain;
+        filter: var(--modal-foreground-filter);
     }
 
     .menu-item.disabled {
@@ -231,7 +250,7 @@
     .menu-separator hr {
         border: none;
         border-bottom: 1px solid rgb(var(--modal-foreground-rgb), 0.2);
-        margin: 3px;
+        margin: 4px 0;
     }
 }
 
